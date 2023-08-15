@@ -1,0 +1,41 @@
+.root{
+    -fx-background-color: #ffffff;
+
+}
+
+#left-menu {
+
+    -fx-background-color: rgb(37, 37, 37);
+}
+
+#tool-bar {
+
+    -fx-background-color: rgb(60, 60, 60);
+}
+
+.keyword {
+    -fx-fill: #007bff; /* Cor para palavras-chave (azul no exemplo) */
+}
+
+.comment {
+    -fx-fill: #808080; /* Cor para comentários (cinza no exemplo) */
+}
+
+.string {
+    -fx-fill: #00a000; /* Cor para strings (verde no exemplo) */
+}
+
+#coding {
+    -fx-control-inner-background: #131313; /* Cor de fundo desejada */
+    -fx-text-box-border: transparent; /* Remove a borda padrão */
+    -fx-focus-color: transparent; /* Remove a borda de foco */
+    -fx-faint-focus-color: transparent; /* Remove a borda de foco em estado desfocado */
+    -fx-border-width: 0; /* Largura da borda definida como 0 */
+    -fx-border-color: transparent; /* Cor da borda definida como transparente */
+    -fx-background-color: #131313, #131313, #131313, #131313; /* Definimos a cor de fundo como a mesma cor da borda para ocultá-la */
+    -fx-background-insets: 0, 0, 0, 0; /* Definimos os insets para zero para remover as bordas internas */
+    -fx-border-radius: 0; /* Definimos o raio do canto para zero para remover cantos arredondados */
+    -fx-padding: 0; /* Define o padding como zero para remover qualquer espaço interno */
+    -fx-background-radius: 0px;
+    -fx-text-fill: #ffffff; /* Cor do texto desejada (vermelho no exemplo) */
+}

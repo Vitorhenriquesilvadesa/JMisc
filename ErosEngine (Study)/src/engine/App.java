@@ -25,7 +25,7 @@ public class App {
                 DisplayManager.init();
                 Display window = DisplayManager.createDisplay("Eros Engine Debug");
                 Loader loader = new Loader();
-                RawModel model = OBJLoader.loadObjModel("block", loader);
+                RawModel model = OBJLoader.loadObjModel("dragon", loader);
                 TexturedModel staticModel = new TexturedModel(model,
                                 new Material(loader.loadTexture("null")));
 
@@ -34,7 +34,7 @@ public class App {
                 Light sun = new Light(new Vector3(0, 20, 0), new Vector3(1, 1, 0));
                 Input input = new Input(window.getID());
                 Terrain terrain = new Terrain(-1, 0, loader, new Material(loader.loadTexture("texture002")));
-                Camera camera = new Camera(window.getID(), 0.01f);
+                Camera camera = new Camera(window.getID(), 0.06f);
                 MasterRenderer renderer = new MasterRenderer();
 
                 entities.add(new Entity(staticModel, new Vector3(0, 0, -25), new Vector3(0, 0, 0),
