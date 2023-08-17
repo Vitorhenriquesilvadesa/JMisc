@@ -2,16 +2,15 @@ package org.ignite.iterables;
 
 import java.util.Iterator;
 
-public class LinkedList<T> extends List<T> implements Iterable<T> {
+public class LinkedList<T> extends List<T> {
 
     private Node<T> first;
     private Node<T> last;
-    private int size;
 
     public LinkedList() {
         this.first = null;
         this.last = null;
-        this.size = 0;
+        super.size = 0;
     }
 
     @Override
@@ -20,7 +19,7 @@ public class LinkedList<T> extends List<T> implements Iterable<T> {
     }
 
     @Override
-    public Node<T> getNode(int index) {
+    protected Node<T> getNode(int index) {
 
         Node<T> current = this.first;
 
@@ -65,14 +64,24 @@ public class LinkedList<T> extends List<T> implements Iterable<T> {
             this.first = node;
             this.first.setNext(this.last);
             this.last = node;
-            this.size++;
+            super.size++;
         } else {
 
             Node<T> node = new Node<T>(element);
             this.last.setNext(node);
             this.last = node;
-            this.size++;
+            super.size++;
         }
+    }
+
+    @Override
+    public void add(int index, T element) {
+        Node<T> node = getNode(index);
+        Node<T> newNode = new Node<T>(element);
+
+        newNode.setNext(node.getNext());
+        node.getNext().setPrev(newNode);
+        node.setNext(newNode);
     }
 
     @Override
@@ -85,7 +94,7 @@ public class LinkedList<T> extends List<T> implements Iterable<T> {
 
             T value = node.getValue();
             node = null;
-            this.size--;
+            super.size--;
 
             return value;
 
@@ -94,4 +103,21 @@ public class LinkedList<T> extends List<T> implements Iterable<T> {
         }
     }
 
+    @Override
+    public List<T> sort(Sort<T> sortMethod) {
+        sortMethod.sort(this);
+        return this;
+    }
+
+    @Override
+    public List<T> sort() {
+        Sort<T> sortMethod = new InsertionSort<T>();
+        sortMethod.sort(this);
+        return this;
+    }
+
+    @Override
+    public int size() {
+        return super.size;
+    }
 }
