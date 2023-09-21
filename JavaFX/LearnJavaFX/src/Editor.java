@@ -44,5 +44,4 @@ public class Editor extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-
 }

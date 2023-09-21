@@ -140,7 +140,7 @@ public class Matrix4f {
             if (other.elements[i] != 0.0f) {
                 result[i] = elements[i] / other.elements[i];
             } else {
-                // Handle division by zero error
+                // TODO Handle division by zero error
                 result[i] = 0.0f;
             }
         }
