@@ -1,8 +1,8 @@
-package org.vtko.datum.trees;
+package org.vtko.datum.generics;
 
 public enum TraverseType {
-    IN_ORDER,
+    IN_LEVEL,
     PRE_ORDER,
     POS_ORDER,
-    IN_LEVEL
+    IN_ORDER
 }

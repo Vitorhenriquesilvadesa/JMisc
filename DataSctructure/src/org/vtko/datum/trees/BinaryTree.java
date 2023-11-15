@@ -1,272 +1,130 @@
+
 package org.vtko.datum.trees;
 
-import java.util.*;
+import org.vtko.datum.generics.GenericTree;
+import org.vtko.datum.generics.TreeNode;
 
 
 public class BinaryTree<T extends Comparable<T>> extends GenericTree<T> {
 
     @Override
-    public T get(T element) {
-
-        TreeNode<T> current = this.root;
-
-        while (current != null) {
-            if (current.element().compareTo(element) > 0) {
-                current = current.getLeftChild();
-            } else if (current.element().compareTo(element) < 0) {
-                current = current.getRightChild();
-            } else {
-                return current.element();
-            }
-        }
-
-        return null;
-    }
-
-    @Override
-    protected NodePair<T> getNode(T element) {
-
-        TreeNode<T> current = this.root;
-        TreeNode<T> parent = null;
-
-        while (current != null) {
-            if (current.element().compareTo(element) > 0) {
-                parent = current;
-                current = current.getLeftChild();
-            } else if (current.element().compareTo(element) < 0) {
-                parent = current;
-                current = current.getRightChild();
-            } else {
-                return new NodePair<>(parent, current);
-            }
-        }
-
-        return null;
-    }
-
-
-    @Override
     public void insert(T element) {
-        if (this.size == 0) {
-            this.root = new TreeNode<>(element);
+
+        if (root == null) {
+            root = new BinaryTreeNode<T>(element);
         } else {
-            insert(this.root, element);
+            insert(root, element);
         }
-        this.size++;
     }
 
     @Override
-    protected void insert(TreeNode<T> node, T element) {
-        TreeNode<T> current = node;
+    protected void insert(TreeNode<T> current, T value) {
+        TreeNode<T> node = new BinaryTreeNode<>(value);
+        TreeNode<T> parent;
 
         while (true) {
-            if (current.element().compareTo(element) > 0) {
-                if (current.getLeftChild() == null) {
-                    current.left(new TreeNode<>(element));
+            parent = current;
+            if (value.compareTo(current.getElement()) < 0) {
+                current = current.getLeft();
+                if (current == null) {
+                    parent.setLeft(node);
                     break;
                 }
-                current = current.getLeftChild();
-
-            } else if (current.element().compareTo(element) < 0) {
-                if (current.getRightChild() == null) {
-                    current.right(new TreeNode<>(element));
+            } else if (value.compareTo(current.getElement()) > 0) {
+                current = current.getRight();
+                if (current == null) {
+                    parent.setRight(node);
                     break;
                 }
-                current = current.getRightChild();
             } else {
-                return;
+                break;
             }
         }
-
-        size++;
     }
 
     @Override
-    public void delete(T element) {
+    public void delete(T value) {
+        delete(root, value);
+    }
 
-        NodePair<T> pair = getNode(element);
-        int childrenCount = 0;
+    @Override
+    protected void delete(TreeNode<T> child, T value) {
+        TreeNode<T> parent = child;
 
-        if (pair == null) {
+        while (child != null && value.compareTo(child.getElement()) != 0) {
+            parent = child;
+
+            if (value.compareTo(child.getElement()) < 0) {
+                child = child.getLeft();
+            } else if (value.compareTo(child.getElement()) > 0) {
+                child = child.getRight();
+            }
+        }
+
+        if (child == null) {
             return;
         }
 
-        if (pair.getChild().getLeftChild() != null) {
-            childrenCount++;
-        }
-        if (pair.getChild().getRightChild() != null) {
-            childrenCount++;
-        }
+        int countChildren = 0;
 
-        switch (childrenCount) {
+        if (child.getLeft() != null) {
+            countChildren++;
+        }
+        if (child.getRight() != null) {
+            countChildren++;
+        }
+        switch (countChildren) {
             case 0:
-                removeWithoutChildren(pair.getChild());
+                removeWithoutChildren(parent, child);
                 break;
             case 1:
-                removeWithOneChild(pair);
+                removeWithOneChildren(parent, child);
                 break;
             case 2:
-                removeWithTwoChildren(pair.getChild());
+                removeWithTwoChildren(child);
                 break;
         }
     }
 
-    private void removeWithoutChildren(TreeNode<T> node) {
-        NodePair<T> pair = getNode(node.element());
+    private TreeNode<T> findSuccessor(TreeNode<T> genericTreeNode) {
 
-        if (pair == null) {
-            return;
+        TreeNode<T> successor = genericTreeNode.getRight();
+        while (successor.getLeft() != null) {
+            successor = successor.getLeft();
         }
+        return successor;
+    }
 
-        TreeNode<T> parent = pair.getParent();
-        TreeNode<T> currentNode = pair.getChild();
+    protected void removeWithoutChildren(TreeNode<T> parent, TreeNode<T> child) {
 
-        if (parent != null) {
-            if (parent.getLeftChild() == currentNode) {
-                parent.left(null);
-            } else {
-                parent.right(null);
-            }
+        if (child == root) {
+            root = null;
         } else {
-            this.root = null;
-        }
-    }
-
-    private void removeWithOneChild(NodePair<T> pair) {
-        if (pair.getChild().getLeftChild() == null) {
-            pair.getParent().right(pair.getChild().getRightChild());
-            return;
-        }
-        pair.getParent().left(pair.getChild().getLeftChild());
-    }
-
-    private void removeWithTwoChildren(TreeNode<T> node) {
-        TreeNode<T> successor = findLastSuccessor(node).getChild();
-        node.setElement(successor.element());
-        removeWithoutChildren(successor);
-    }
-
-    private NodePair<T> findLastSuccessor(TreeNode<T> node) {
-        NodePair<T> pair = getNode(node.element());
-        TreeNode<T> current = pair.getChild().getRightChild();
-        TreeNode<T> parent = pair.getParent();
-
-        while (current.getLeftChild() != null) {
-            parent = current;
-            current = current.getLeftChild();
-        }
-
-        return new NodePair<>(parent, current);
-    }
-
-    private void getElements(List<TreeNode<T>> elements, TreeNode<T> node) {
-
-        if (node == null) {
-            return;
-        }
-
-        if (elements.size() != this.size) {
-
-            elements.add(node);
-            getElements(elements, node.getLeftChild());
-            getElements(elements, node.getRightChild());
-        }
-    }
-
-    @Override
-    public void foreach(ForeachCallback<T> callback) {
-        List<TreeNode<T>> list = new ArrayList<>();
-        getElements(list, root);
-        for (TreeNode<T> item : list) {
-            callback.consume(item.element());
-        }
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return new BinaryTreeIterator<>(this.root);
-    }
-
-
-    public List<T> traverse(TraverseType traverseType) {
-
-        List<T> elements = new ArrayList<>(this.size);
-
-        switch (traverseType) {
-            case IN_ORDER -> traverseInOrder(elements, root);
-
-            case PRE_ORDER -> traversePreOrder(elements, root);
-
-            case POS_ORDER -> traversePosOrder(elements, root);
-
-            case IN_LEVEL -> traverseInLevel(elements, root);
-        };
-
-        return elements;
-    }
-
-    private void traverseInOrder(List<T> elements, TreeNode<T> node) {
-        if (node != null) {
-            traverseInOrder(elements, node.getLeftChild());
-            elements.add(node.element());
-            traverseInOrder(elements, node.getRightChild());
-        }
-    }
-
-    private void traversePosOrder(List<T> elements, TreeNode<T> node) {
-        if (node != null) {
-            traversePosOrder(elements, node.getLeftChild());
-            traversePosOrder(elements, node.getRightChild());
-            elements.add(node.element());
-        }
-    }
-
-    private void traversePreOrder(List<T> elements, TreeNode<T> node) {
-        if (node != null) {
-            elements.add(node.element());
-            traversePreOrder(elements, node.getLeftChild());
-            traversePreOrder(elements, node.getRightChild());
-        }
-    }
-
-    private void traverseInLevel(List<T> elements, TreeNode<T> node) {
-        BinaryTreeNodeIterator iterator = new BinaryTreeNodeIterator(this.root);
-
-        while(iterator.hasNext()){
-            elements.add(iterator.next().element());
-        }
-    }
-
-    private class BinaryTreeNodeIterator implements Iterator<TreeNode<T>> {
-        private final Stack<TreeNode<T>> stack;
-
-        public BinaryTreeNodeIterator(TreeNode<T> root) {
-            this.stack = new Stack<>();
-            populateStack(root);
-        }
-
-        private void populateStack(TreeNode<T> node) {
-            while (node != null) {
-                stack.push(node);
-                node = node.getLeftChild();
+            if (parent.getLeft() == child) {
+                parent.setLeft(null);
+            } else {
+                parent.setRight(null);
             }
         }
+    }
 
-        @Override
-        public boolean hasNext() {
-            return !stack.isEmpty();
+
+    protected void removeWithOneChildren(TreeNode<T> parent, TreeNode<T> child) {
+        TreeNode<T> newChild = child.getLeft() != null ? child.getLeft() : child.getRight();
+
+        if (parent.getLeft() == child) {
+            parent.setLeft(newChild);
+        } else {
+            parent.setRight(newChild);
         }
 
-        @Override
-        public TreeNode<T> next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException("No more elements in the tree");
-            }
+    }
 
-            TreeNode<T> node = stack.pop();
-            populateStack(node.getRightChild());
+    protected void removeWithTwoChildren(TreeNode<T> current) {
 
-            return node;
-        }
+        TreeNode<T> successor = findSuccessor(current);
+        current.setElement(successor.getElement());
+        delete(current.getRight(), successor.getElement());
     }
 }
+
