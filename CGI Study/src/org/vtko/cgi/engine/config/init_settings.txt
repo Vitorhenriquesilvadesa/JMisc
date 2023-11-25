@@ -1,0 +1,8 @@
+#WINDOW_SIZE
+width: 1280
+height: 720
+#END_WINDOW_SIZE
+
+#WINDOW_TITLE
+title: "CGI Study"
+#END_WINDOW_TITLE

@@ -1,11 +1,15 @@
-
 package org.vtko.datum.trees;
 
 import org.vtko.datum.generics.GenericTree;
+import org.vtko.datum.generics.TraverseType;
 import org.vtko.datum.generics.TreeNode;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class BinaryTree<T extends Comparable<T>> extends GenericTree<T> {
+
+public class BinaryTree<T extends Comparable<T>> extends GenericTree<T, BinaryTreeNode<T>> {
 
     @Override
     public void insert(T element) {
@@ -18,20 +22,20 @@ public class BinaryTree<T extends Comparable<T>> extends GenericTree<T> {
     }
 
     @Override
-    protected void insert(TreeNode<T> current, T value) {
-        TreeNode<T> node = new BinaryTreeNode<>(value);
-        TreeNode<T> parent;
+    protected void insert(BinaryTreeNode<T> current, T value) {
+        BinaryTreeNode<T> node = new BinaryTreeNode<>(value);
+        BinaryTreeNode<T> parent;
 
         while (true) {
             parent = current;
             if (value.compareTo(current.getElement()) < 0) {
-                current = current.getLeft();
+                current = (BinaryTreeNode<T>) current.getLeft();
                 if (current == null) {
                     parent.setLeft(node);
                     break;
                 }
             } else if (value.compareTo(current.getElement()) > 0) {
-                current = current.getRight();
+                current = (BinaryTreeNode<T>) current.getRight();
                 if (current == null) {
                     parent.setRight(node);
                     break;
@@ -48,16 +52,16 @@ public class BinaryTree<T extends Comparable<T>> extends GenericTree<T> {
     }
 
     @Override
-    protected void delete(TreeNode<T> child, T value) {
-        TreeNode<T> parent = child;
+    protected void delete(BinaryTreeNode<T> child, T value) {
+        BinaryTreeNode<T> parent = child;
 
         while (child != null && value.compareTo(child.getElement()) != 0) {
             parent = child;
 
             if (value.compareTo(child.getElement()) < 0) {
-                child = child.getLeft();
+                child = (BinaryTreeNode<T>) child.getLeft();
             } else if (value.compareTo(child.getElement()) > 0) {
-                child = child.getRight();
+                child = (BinaryTreeNode<T>) child.getRight();
             }
         }
 
@@ -95,7 +99,7 @@ public class BinaryTree<T extends Comparable<T>> extends GenericTree<T> {
         return successor;
     }
 
-    protected void removeWithoutChildren(TreeNode<T> parent, TreeNode<T> child) {
+    protected void removeWithoutChildren(BinaryTreeNode<T> parent, BinaryTreeNode<T> child) {
 
         if (child == root) {
             root = null;
@@ -109,7 +113,7 @@ public class BinaryTree<T extends Comparable<T>> extends GenericTree<T> {
     }
 
 
-    protected void removeWithOneChildren(TreeNode<T> parent, TreeNode<T> child) {
+    protected void removeWithOneChildren(BinaryTreeNode<T> parent, BinaryTreeNode<T> child) {
         TreeNode<T> newChild = child.getLeft() != null ? child.getLeft() : child.getRight();
 
         if (parent.getLeft() == child) {
@@ -117,14 +121,43 @@ public class BinaryTree<T extends Comparable<T>> extends GenericTree<T> {
         } else {
             parent.setRight(newChild);
         }
-
     }
 
-    protected void removeWithTwoChildren(TreeNode<T> current) {
+    protected void removeWithTwoChildren(BinaryTreeNode<T> current) {
 
         TreeNode<T> successor = findSuccessor(current);
         current.setElement(successor.getElement());
-        delete(current.getRight(), successor.getElement());
+        delete((BinaryTreeNode<T>) current.getRight(), successor.getElement());
+    }
+
+    public void balance() {
+
+        try {
+            List<T> orderElements = this.traverse(TraverseType.IN_ORDER);
+            List<T> balancedElements = new ArrayList<>();
+
+            @SuppressWarnings("unchecked")
+            BinaryTree<T> balancedTree = getClass().getDeclaredConstructor().newInstance();
+
+            while (!orderElements.isEmpty()) {
+                T firstElement = orderElements.remove(0);
+
+                if (!orderElements.isEmpty()) {
+                    T nextElement = orderElements.remove(0);
+                    balancedElements.add(nextElement);
+                }
+
+                balancedElements.add(firstElement);
+            }
+
+            while (!balancedElements.isEmpty()) {
+                balancedTree.insert(balancedElements.remove(0));
+            }
+
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
+            System.err.println(e.getMessage());
+        }
     }
 }
 

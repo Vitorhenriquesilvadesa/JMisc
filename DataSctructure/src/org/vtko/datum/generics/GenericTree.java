@@ -3,22 +3,22 @@ package org.vtko.datum.generics;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class GenericTree<T extends Comparable<T>> {
-    protected TreeNode<T> root;
+public abstract class GenericTree<T extends Comparable<T>, N extends TreeNode<T>> {
+    protected N root;
 
     public abstract void insert(T element);
 
-    protected abstract void insert(TreeNode<T> current, T value);
+    protected abstract void insert(N current, T value);
 
     public abstract void delete(T element);
 
-    protected abstract void delete(TreeNode<T> current, T value);
+    protected abstract void delete(N current, T value);
 
-    protected abstract void removeWithoutChildren(TreeNode<T> parent, TreeNode<T> child);
+    protected abstract void removeWithoutChildren(N parent, N child);
 
-    protected abstract void removeWithOneChildren(TreeNode<T> parent, TreeNode<T> child);
+    protected abstract void removeWithOneChildren(N parent, N child);
 
-    protected abstract void removeWithTwoChildren(TreeNode<T> current);
+    protected abstract void removeWithTwoChildren(N current);
 
     public List<T> traverse(TraverseType type) {
 

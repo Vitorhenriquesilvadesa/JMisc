@@ -27,20 +27,22 @@ public class App {
                 Loader loader = new Loader();
                 RawModel model = OBJLoader.loadObjModel("dragon", loader);
                 TexturedModel staticModel = new TexturedModel(model,
-                                new Material(loader.loadTexture("texture002")));
+                                new Material(loader.loadTexture("null")));
 
                 List<Entity> entities = new ArrayList<Entity>();
 
-                Light sun = new Light(new Vector3(0, 20, 0), new Vector3(1, 1, 1));
+                Light sun = new Light(new Vector3(0, 20, 0), new Vector3(0, 1, 1));
                 Input input = new Input(window.getID());
                 Terrain terrain = new Terrain(-1, 0, loader, new Material(loader.loadTexture("texture002")));
                 Camera camera = new Camera(window.getID(), 0.06f);
                 MasterRenderer renderer = new MasterRenderer();
 
+                staticModel.setmaterial(new Material(loader.loadTexture("null"), 100, 1, false, false));
+
                 entities.add(new Entity(staticModel, new Vector3(0, 0, -25), new Vector3(0, 0, 0),
-                                new Vector3(1, 1, 1)));
+                                new Vector3(2, 2, 2)));
                 entities.get(0).getModel().setmaterial(
-                                new Material(entities.get(0).getModel().getMaterial().getID(), 30f, 1, false,
+                                new Material(entities.get(0).getModel().getMaterial().getID(), 100f, 1, false,
                                                 false));
                 renderer.setBackGroundColor(new Vector3(1, 1, 1));
 
